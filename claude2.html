@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #fff;
+            min-height: 100vh;
+            font-family: 'Times New Roman', serif;
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+        
+        /* Eye-tracking cursor follower */
+        .eye {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            border: 2px solid #000;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+        }
+        
+        .pupil {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #000;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        /* Main container */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 100px 40px;
+            position: relative;
+        }
+        
+        /* Repetitive header - obsessive */
+        .header {
+            text-align: center;
+            margin-bottom: 100px;
+            line-height: 1.2;
+        }
+        
+        .demand {
+            font-size: 14px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            font-weight: 400;
+            margin: 0;
+            animation: intensify 0.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes intensify {
+            0% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+        
+        /* Counting element */
+        .count {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            color: #000;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Payment form as ritual */
+        .ritual {
+            border: 3px solid #000;
+            padding: 60px;
+            background: #fff;
+            position: relative;
+            box-shadow: 20px 20px 0 #000;
+        }
+        
+        .ritual::before {
+            content: 'TRANSACTION';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            padding: 0 20px;
+            font-size: 11px;
+            letter-spacing: 0.3em;
+        }
+        
+        .amount {
+            text-align: center;
+            font-size: 120px;
+            font-weight: 400;
+            margin-bottom: 60px;
+            line-height: 1;
+            position: relative;
+        }
+        
+        .amount::after {
+            content: 'ONE DOLLAR';
+            position: absolute;
+            bottom: -30px;
+            left: 0;
+            right: 0;
+            font-size: 10px;
+            letter-spacing: 0.5em;
+            opacity: 0.5;
+        }
+        
+        /* Form fields - clinical */
+        .field {
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .field-label {
+            font-size: 9px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: block;
+            opacity: 0.6;
+        }
+        
+        input {
+            width: 100%;
+            border: none;
+            border-bottom: 2px solid #000;
+            background: transparent;
+            padding: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            color: #000;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-bottom-width: 4px;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 1px,
+                rgba(0,0,0,0.03) 1px,
+                rgba(0,0,0,0.03) 2px
+            );
+        }
+        
+        input::placeholder {
+            color: rgba(0,0,0,0.3);
+            font-style: italic;
+        }
+        
+        .split {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        /* Submit - aggressive */
+        .submit-container {
+            margin-top: 60px;
+            text-align: center;
+        }
+        
+        button {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 25px 80px;
+            font-family: 'Times New Roman', serif;
+            font-size: 14px;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+            font-weight: 400;
+        }
+        
+        button:hover {
+            background: #fff;
+            color: #000;
+            box-shadow: inset 0 0 0 3px #000;
+            transform: scale(1.05);
+        }
+        
+        button:active {
+            transform: scale(0.95);
+        }
+        
+        /* Terms - the catch */
+        .terms {
+            margin-top: 80px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(0,0,0,0.2);
+            font-size: 9px;
+            line-height: 1.8;
+            letter-spacing: 0.1em;
+            text-align: justify;
+            opacity: 0.5;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Invasive popups */
+        .thought {
+            position: fixed;
+            background: #fff;
+            border: 2px solid #000;
+            padding: 20px 30px;
+            font-size: 13px;
+            letter-spacing: 0.1em;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            max-width: 300px;
+            box-shadow: 10px 10px 0 rgba(0,0,0,0.1);
+        }
+        
+        .thought.active {
+            opacity: 1;
+        }
+        
+        /* Void state */
+        .void {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: voidAppear 2s ease-in-out;
+        }
+        
+        @keyframes voidAppear {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        .void-text {
+            color: #fff;
+            font-size: 40px;
+            letter-spacing: 0.3em;
+            text-align: center;
+            animation: voidPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes voidPulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+        
+        /* Warning system */
+        .warning {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #000;
+            color: #fff;
+            text-align: center;
+            padding: 15px;
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            transform: translateY(100%);
+            transition: transform 0.5s;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .warning.show {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="eye" id="eye1">
+        <div class="pupil"></div>
+    </div>
+    <div class="eye" id="eye2">
+        <div class="pupil"></div>
+    </div>
+    <div class="eye" id="eye3">
+        <div class="pupil"></div>
+    </div>
+    
+    <div class="count">
+        PARTICIPANTS: <span id="counter">0</span>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="demand">GIVE ME A DOLLAR</h1>
+            <h1 class="demand">GIVE ME A DOLLAR</h1>
+            <h1 class="demand">GIVE ME A DOLLAR</h1>
+        </div>
+        
+        <div class="ritual">
+            <div class="amount">$1</div>
+            
+            <form id="transactionForm">
+                <div class="field">
+                    <label class="field-label">Card Number</label>
+                    <input type="text" id="card" placeholder="Enter your offering" maxlength="19">
+                </div>
+                
+                <div class="split">
+                    <div class="field">
+                        <label class="field-label">Expiration</label>
+                        <input type="text" id="exp" placeholder="MM/YY" maxlength="5">
+                    </div>
+                    
+                    <div class="field">
+                        <label class="field-label">Security Code</label>
+                        <input type="text" id="cvv" placeholder="CVV" maxlength="3">
+                    </div>
+                </div>
+                
+                <div class="field">
+                    <label class="field-label">Name</label>
+                    <input type="text" id="name" placeholder="Who are you?">
+                </div>
+                
+                <div class="submit-container">
+                    <button type="submit">GIVE</button>
+                </div>
+            </form>
+            
+            <div class="terms">
+                BY PROCEEDING YOU ACKNOWLEDGE THAT THIS IS A PERFORMANCE ART PIECE. NO ACTUAL MONETARY TRANSACTION WILL OCCUR. YOU ARE PARTICIPATING IN AN EXPLORATION OF DIGITAL CAPITALISM, CONSUMER BEHAVIOR, AND THE PSYCHOLOGICAL CONTRACT OF EXCHANGE. YOUR PARTICIPATION IS VOLUNTARY. YOUR DATA IS NOT COLLECTED. NOTHING IS REAL. EVERYTHING IS PERMITTED. THIS IS NOT A SCAM. THIS IS ART. OR IS IT? THE ACT OF FILLING THIS FORM IS THE TRANSACTION. YOUR TIME IS THE CURRENCY. YOUR ATTENTION HAS ALREADY BEEN EXCHANGED. THANK YOU FOR YOUR DOLLAR.
+            </div>
+        </div>
+    </div>
+    
+    <div class="thought" id="thought1">Why are you here?</div>
+    <div class="thought" id="thought2">What compels you to give?</div>
+    <div class="thought" id="thought3">Is this art or exploitation?</div>
+    <div class="thought" id="thought4">You could leave at any time.</div>
+    
+    <div class="void" id="void">
+        <div class="void-text">
+            YOU GAVE NOTHING<br>
+            YOU RECEIVED NOTHING<br>
+            THE EXCHANGE IS COMPLETE
+        </div>
+    </div>
+    
+    <div class="warning" id="warning">
+        ⚠ YOUR PARTICIPATION HAS BEEN RECORDED IN THE CONCEPTUAL LEDGER ⚠
+    </div>
+    
+    <script>
+        // Eye following cursor
+        const eyes = [
+            { element: document.getElementById('eye1'), x: 100, y: 100 },
+            { element: document.getElementById('eye2'), x: window.innerWidth - 100, y: 100 },
+            { element: document.getElementById('eye3'), x: window.innerWidth / 2, y: window.innerHeight - 100 }
+        ];
+        
+        document.addEventListener('mousemove', (e) => {
+            eyes.forEach((eye, index) => {
+                const pupil = eye.element.querySelector('.pupil');
+                const rect = eye.element.getBoundingClientRect();
+                const eyeCenterX = rect.left + rect.width / 2;
+                const eyeCenterY = rect.top + rect.height / 2;
+                
+                const angle = Math.atan2(e.clientY - eyeCenterY, e.clientX - eyeCenterX);
+                const distance = Math.min(15, Math.hypot(e.clientX - eyeCenterX, e.clientY - eyeCenterY) / 10);
+                
+                const pupilX = Math.cos(angle) * distance;
+                const pupilY = Math.sin(angle) * distance;
+                
+                pupil.style.transform = `translate(calc(-50% + ${pupilX}px), calc(-50% + ${pupilY}px))`;
+            });
+        });
+        
+        // Position eyes
+        function positionEyes() {
+            eyes[0].element.style.left = '100px';
+            eyes[0].element.style.top = '100px';
+            eyes[1].element.style.left = (window.innerWidth - 100) + 'px';
+            eyes[1].element.style.top = '100px';
+            eyes[2].element.style.left = (window.innerWidth / 2) + 'px';
+            eyes[2].element.style.top = (window.innerHeight - 100) + 'px';
+        }
+        
+        positionEyes();
+        window.addEventListener('resize', positionEyes);
+        
+        // Random thoughts appearing
+        const thoughts = document.querySelectorAll('.thought');
+        let thoughtTimer;
+        
+        function showRandomThought() {
+            thoughts.forEach(t => t.classList.remove('active'));
+            
+            const thought = thoughts[Math.floor(Math.random() * thoughts.length)];
+            thought.style.left = Math.random() * (window.innerWidth - 300) + 'px';
+            thought.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+            thought.classList.add('active');
+            
+            setTimeout(() => {
+                thought.classList.remove('active');
+            }, 3000);
+            
+            thoughtTimer = setTimeout(showRandomThought, 5000 + Math.random() * 10000);
+        }
+        
+        setTimeout(showRandomThought, 3000);
+        
+        // Card formatting
+        document.getElementById('card').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formatted;
+        });
+        
+        document.getElementById('exp').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        });
+        
+        document.getElementById('cvv').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+        
+        // Counter
+        let count = Math.floor(Math.random() * 47823) + 1000;
+        document.getElementById('counter').textContent = count.toLocaleString();
+        
+        // Form submission
+        document.getElementById('transactionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            clearTimeout(thoughtTimer);
+            thoughts.forEach(t => t.classList.remove('active'));
+            
+            document.getElementById('void').style.display = 'flex';
+            
+            setTimeout(() => {
+                document.getElementById('warning').classList.add('show');
+            }, 2000);
+            
+            setTimeout(() => {
+                count++;
+                document.getElementById('counter').textContent = count.toLocaleString();
+                
+                document.getElementById('void').style.display = 'none';
+                document.getElementById('warning').classList.remove('show');
+                e.target.reset();
+                
+                setTimeout(showRandomThought, 3000);
+            }, 5000);
+        });
+        
+        // Prevent context menu for extra unease
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        
+        // Random scroll interference
+        let scrollCount = 0;
+        window.addEventListener('scroll', () => {
+            scrollCount++;
+            if (scrollCount % 50 === 0) {
+                const thought = thoughts[Math.floor(Math.random() * thoughts.length)];
+                thought.textContent = "Why are you scrolling?";
+                thought.style.left = '50%';
+                thought.style.top = '50%';
+                thought.style.transform = 'translate(-50%, -50%)';
+                thought.classList.add('active');
+                setTimeout(() => {
+                    thought.classList.remove('active');
+                    thought.style.transform = 'none';
+                }, 2000);
+            }
+        });
+    </script>
+    <script async
+  src="https://js.stripe.com/v3/buy-button.js">
+</script>
+
+<stripe-buy-button
+  buy-button-id="buy_btn_1U35nNCqBWO2wgZDER81P4ZV"
+  publishable-key="pk_test_51SxvsoCqBWO2wgZDVA3PukuidUjI2GcXvBFP7NuQgJcfOa1fpDzqMYu6lJQWZcqROc75GccpRZBiskLQkHXjN5bx00HO0d2sKZ"
+>
+</stripe-buy-button>
+</body>
+</html>

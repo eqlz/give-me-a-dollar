@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>THE VOID EXCHANGE</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        :root { --bg: #050505; --text: #888; --accent: #ff0000; }
+        body { 
+            background: var(--bg); color: var(--text); 
+            font-family: 'Courier New', monospace; 
+            height: 100vh; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; margin: 0;
+            overflow: hidden;
+        }
+
+        #glitch-text {
+            max-width: 600px; text-align: center;
+            font-size: 1.1rem; line-height: 1.6;
+            margin-bottom: 50px; min-height: 100px;
+        }
+
+        .payment-box {
+            border: 1px solid #222; padding: 50px;
+            transition: 1s; cursor: crosshair;
+        }
+
+        .payment-box:hover { border-color: var(--accent); }
+
+        button {
+            background: none; border: 1px solid #444;
+            color: #fff; padding: 15px 40px;
+            letter-spacing: 5px; cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover { background: #fff; color: #000; box-shadow: 0 0 15px #fff; }
+
+        .status { font-size: 0.7rem; margin-top: 20px; color: #333; }
+    </style>
+</head>
+<body>
+
+    <div id="glitch-text"></div>
+
+    <div class="payment-box">
+        <div style="font-size: 2rem; margin-bottom: 20px; text-align: center;">$1.00</div>
+        <button id="checkout-button">RELINQUISH</button>
+        <div class="status">SYSTEM: AWAITING INPUT...</div>
+    </div>
+
+    <script>
+        // --- TEXT ANIMATION ---
+        const text = "A dollar is a promise that has been broken a million times. Give it to the Archive. Let it rest in the cold dark of this server. It wants to be still. It wants to be worth nothing. Feed the vacuum.";
+        let i = 0;
+        function typeWriter() {
+            if (i < text.length) {
+                document.getElementById("glitch-text").innerHTML += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50 + Math.random() * 100);
+            }
+        }
+        window.onload = typeWriter;
+
+        // --- STRIPE INTEGRATION ---
+        const stripe = Stripe('YOUR_PUBLISHABLE_KEY_HERE'); // Replace with your key
+
+        document.getElementById('checkout-button').addEventListener('click', function () {
+            // You will need a backend to create a Checkout Session, 
+            // or use Stripe "Payment Links" for a no-code version.
+            
+            // OPTION: Replace this URL with a 'Stripe Payment Link' for simplicity
+            window.location.href = "YOUR_STRIPE_PAYMENT_LINK_URL"; 
+        });
+    </script>
+</body>
+</html>

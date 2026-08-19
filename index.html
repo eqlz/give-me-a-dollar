@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE EXCHANGE</title>
+    <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --text-color: #d1d1d1;
+            --accent-color: #ff0000;
+            /* A sharp, surgical red */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100dvh;
+            margin: 0;
+            padding: 24px;
+            box-sizing: border-box;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        /* Self-contained grain: inline SVG fractal noise, no external requests */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+
+        #manifesto {
+            font-size: 1.2rem;
+            letter-spacing: 0.2rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            text-transform: uppercase;
+            animation: flicker 4s infinite;
+        }
+
+        .payment-container {
+            border: 1px solid #333;
+            padding: 40px;
+            width: 100%;
+            max-width: 300px;
+            box-sizing: border-box;
+            transition: all 0.5s ease;
+        }
+
+        .price-tag {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        button {
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--text-color);
+            padding: 15px 30px;
+            width: 100%;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        /* Red only while RELINQUISH is being pressed - released, it lets go. */
+        .payment-container:has(.relinquish-btn:active) {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+        }
+
+        /* Hover states only on devices that can actually hover.
+           On touch, :hover sticks after a tap and the resting state never shows. */
+        @media (hover: hover) {
+            .payment-container:hover {
+                border-color: var(--accent-color);
+                box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+            }
+
+            button:hover {
+                background: var(--text-color);
+                color: var(--bg-color);
+            }
+
+            a.relinquish-btn:hover {
+                background: var(--text-color);
+                color: var(--bg-color);
+            }
+        }
+
+        /* Touch equivalent: a brief flash while the finger is down */
+        .relinquish-btn:active {
+            background: var(--text-color);
+            color: var(--bg-color);
+        }
+
+        a.relinquish-btn {
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--text-color);
+            padding: 15px 30px;
+            width: 100%;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+            text-decoration: none;
+            display: block;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .disclaimer {
+            margin-top: 2rem;
+            font-size: 0.6rem;
+            color: #444;
+            max-width: 250px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        /* Small screens: rein in the letter-spacing so the manifesto
+           wraps cleanly, scale the price down, keep the disclaimer legible */
+        @media (max-width: 480px) {
+            #manifesto {
+                font-size: 1rem;
+                letter-spacing: 0.12rem;
+                margin-bottom: 2.5rem;
+            }
+
+            .payment-container {
+                padding: 32px 24px;
+            }
+
+            .price-tag {
+                font-size: 2.5rem;
+            }
+
+            .disclaimer {
+                font-size: 0.65rem;
+                color: #555;
+            }
+        }
+
+        @keyframes flicker {
+            0% {
+                opacity: 1;
+            }
+
+            5% {
+                opacity: 0.8;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Glitch: chromatic aberration on the dollar sign.
+           Two pseudo-element copies (red / cyan-ish) jitter out of register
+           at irregular intervals, like a corrupted signal. */
+        .glitch {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-char);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            opacity: 0;
+        }
+
+        .glitch::before {
+            color: var(--accent-color);
+            animation: glitch-shift-a 3.7s infinite steps(1);
+        }
+
+        .glitch::after {
+            color: #00e5e5;
+            animation: glitch-shift-b 3.7s infinite steps(1);
+        }
+
+        /* Mostly nothing, then brief violent misregistration.
+           steps(1) makes it snap instead of slide - crucial for the broken-signal feel. */
+        @keyframes glitch-shift-a {
+            0%, 91% {
+                opacity: 0;
+                transform: translate(0, 0);
+            }
+
+            92% {
+                opacity: 0.8;
+                transform: translate(-3px, 1px);
+            }
+
+            94% {
+                opacity: 0.8;
+                transform: translate(2px, -2px);
+            }
+
+            96% {
+                opacity: 0.8;
+                transform: translate(-1px, 2px);
+            }
+
+            98%, 100% {
+                opacity: 0;
+                transform: translate(0, 0);
+            }
+        }
+
+        @keyframes glitch-shift-b {
+            0%, 91% {
+                opacity: 0;
+                transform: translate(0, 0);
+            }
+
+            92% {
+                opacity: 0.8;
+                transform: translate(3px, -1px);
+            }
+
+            94% {
+                opacity: 0.8;
+                transform: translate(-2px, 2px);
+            }
+
+            96% {
+                opacity: 0.8;
+                transform: translate(1px, -2px);
+            }
+
+            98%, 100% {
+                opacity: 0;
+                transform: translate(0, 0);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            #manifesto,
+            .glitch::before,
+            .glitch::after {
+                animation: none;
+            }
+
+            .glitch::before,
+            .glitch::after {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="manifesto">
+        Submit a single unit of currency.<br>
+        Nothing will happen.
+    </div>
+
+    <div class="payment-container">
+        <div class="price-tag"><span class="glitch" data-char="$">$</span>1.00</div>
+
+        <!-- <button onclick="alert('The transaction is a ghost.')">RELINQUISH</button> -->
+        <a class="relinquish-btn" href="https://buy.stripe.com/test_8x2cN4cDZ3Xtask5rM0RG00">RELINQUISH</a>
+    </div>
+
+    <div class="disclaimer">
+        BY CLICKING, YOU ACKNOWLEDGE THAT NO GOODS, OR SERVICES WILL BE PROVIDED. THE DOLLAR IS GONE. YOU ARE HERE.
+    </div>
+
+</body>
+
+</html>
